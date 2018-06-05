@@ -1,0 +1,127 @@
+$green: #16a085; 
+$grey: #5A6576;
+$other-grey: #E7ECEE;
+$blue: #058CC5;
+$red: #d2527f;
+$light-blue: #3498DB;
+
+
+.white{
+	background-color: white
+}
+
+.white-text{
+	color: white
+}
+.green {
+	background-color: $green;
+}
+
+/* color del texto*/
+.green-text {
+	color: $green;
+}
+
+.blue {
+	background-color: $blue;
+}
+
+.blue-text {
+	color: $blue;
+}
+
+.light-blue {
+	background-color: $light-blue;
+}
+
+.light-blue-text {
+	color: $light-blue;
+}
+
+.red {
+	background-color: $red;
+}
+
+.red-text {
+	color: $red;
+}
+
+.grey {
+	background-color: $grey;
+}
+
+.grey-text {
+	color: $grey;
+}
+
+
+.other-grey {
+	background-color: $other-grey;
+}
+
+.other-grey-text {
+	color: $other-grey;
+}
+
+/*Paddings*/
+.big-padding{
+	padding:2em; 
+}
+
+.no-padding{
+	padding: 0;
+}
+
+/*Alineamiento*/
+
+.no-float{
+	float: none !important;
+}
+
+.inline-block{
+	float: none !important;
+	display: inline-block;
+	vertical-align:middle; /* para q la imagen este al mismo nivel q el texto*/
+}
+
+/*Tamaños agrandar la fuente*/
+.ultra-big{
+	font-size:7em;
+}
+
+
+img{
+	max-width: 100% !important;
+}
+
+.tall-padding{
+	padding: 10px 5px; /* 10px arriba y abajo y 5px padding a la izq y a la derecha */
+}
+
+.right-space{
+	margin-right: 1em; /*Dar espacio para que no esten apegados*/
+}
+
+.payment-btn{
+	border-radius: 3px;
+	border: none;
+	color: 	#fff;
+	padding: 1em 2em;
+	outline: none;
+}
+
+.paypal-btn{
+	background-color: #FE1935;
+}
+
+.card-btn{
+	background-color: #1D785B;
+}
+
+a:hover{
+	color: inherit !important;
+}
+
+.close-parent{
+	cursor:pointer;
+}

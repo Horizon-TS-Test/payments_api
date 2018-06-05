@@ -1,0 +1,19 @@
+class WelcomeController < ApplicationController
+  def index
+    @orders = current_user.orders
+  end
+
+  def unregistered
+  	render layout: "landing"
+  end
+
+  def payment_succed
+  	#limpiar las cookies
+  	if @shopping_cart.payed?
+  		cookies[:shopping_cart_id] = nil
+  	else
+  		redirect_to carrito_path
+  	end 
+  end
+
+end
