@@ -25,12 +25,15 @@ gem 'coffee-rails', '~> 4.2'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 
+# gema de postgres
+gem 'pg','~> 0.21.0'
+
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 
-########################### aumente ##########33
+########################### aumente ##########
 #Devise para autenticacion
 gem "devise"
 
