@@ -6,95 +6,81 @@ class PaymentsController < ApplicationController
 	def checkout
 		@my_payment = MyPayment.find_by(paypal_id: params[:paymentId]) #paymentId nombre que esta en el url del navegador
 		if @my_payment.nil?
-			#redirect_to "/carrito"
-			puts "aki 1"
+			render json: {status: 'ERROR', message:'Por favor verifique la informacion del pago', data:@my_payment.errors},status: :unprocessable_entity
 		else
 			Stores::Paypal.checkout(params[:PayerID],params[:paymentId]) do
 				@my_payment.update(email: Stores::Paypal.get_email(params[:paymentId]))
-				
 				@my_payment.pay!
 				render json: {status: 'SUCCESS', message:'Se proceso el pago con Paypal', data:@my_payment},status: :ok
-				#redirect_to ok_path, notice: "Se proceso el pago con PayPal"
-				
 				return
 			end
-			#redirect_to carrito_path, notice:"Hubo un error al procesar el pago"
 			render json: {status: 'ERROR', message:'Hubo un error al procesar el pago', data:@my_payment.errors},status: :unprocessable_entity
+			return
 		end
 	end
 
 	def process_card
-		paypal_helper = Stores::Paypal.new(@shopping_cart.total, @shopping_cart.items, return_url: checkout_url, cancel_url: carrito_url)
-
-		if paypal_helper.process_card(params).create
+		products = params['productos']
+		h = convetirHash(products['items'])
+		total = products['total'] 
+		items = h
+		return_url = products['return_url']
+		cancel_url = products['cancel_url']
+		paypal_helper = Stores::Paypal.new(total, items, return_url, cancel_url)
+		tarjeta_datos = params['tarjeta']
+		if paypal_helper.process_card(tarjeta_datos).create
 			@my_payment = MyPayment.create!(paypal_id: paypal_helper.payment.id, 
 									  ip:request.remote_ip,
-									  email: params[:email],
-									  shopping_cart_id: cookies[:shopping_cart_id] ) # id identifica al pago y despues nos permite ejecutar el pago
+									  email: tarjeta_datos['email'],
+									  shopping_cart_id: params['shopping_id'],
+									  total: total ) # id identifica al pago y despues nos permite ejecutar el pago
 			@my_payment.pay!
-			redirect_to carrito_path, notice: "El pago se realizó correctamente"
+			render json: {status: 'SUCCESS', message:'El pago se realizó correctamente', data:@my_payment},status: :ok
 		else
-			redirect_to carrito_path, notice: paypal_helper.payment.error
+			
+			 
+			render json: {status: 'ERROR', message:'Hubo un error al procesar el pago', data:@my_payment.errors},status: :unprocessable_entity
 		end
 	end
 
 
-	def create 
+	def create
+		h = convetirHash(params['items'])
 		total = params['total'] 
-		items = params['items']
+		items = h
 		return_url = params['return_url']
 		cancel_url = params['cancel_url']
-		params['payment'] = nil
-
+		shopping = params['shopping_id']
+		puts "shopping"
+		puts shopping 
 		paypal_helper = Stores::Paypal.new(total, items, return_url, cancel_url)
-		
-		#puts paypal_helper.to_json
-	 	#items1 = {"name"=>"Back End", "sku"=>"item", "price"=>1, "currency"=>"USD", "quantity"=>1}
-	 	
-	 	#items[0] = {:name=>"Back End", :sku=>":item", :price=>1, :currency=>"USD", :quantity=>1}
-	 	#items[1] = {:name=>"Front End", :sku=>":item", :price=>1, :currency=>"USD", :quantity=>1}
-
-	 	#items1 = items[0]
-	 	#puts items[0]
-	 	#puts items1
-	 	items1 = {"name"=>"Back End", "sku"=>"item", "price"=>1, "currency"=>"USD", "quantity"=>1}
-		#items1.keys.each do |key|
-  		#items1[key.to_sym] = items1.delete(key)
-
-  		items1.keys.each do |key| 
-  			items1[key.to_sym] = items1.delete(key) 
-  			puts "key"
-  			puts key
-  			puts "key to sym"
-  			puts items1[key.to_sym]
-  			puts "key to sym delete"
-  			puts items1.delete(key)
-  		end
-
-  		puts items1
-
-  			#items1.keys.each { |key| items1[key.to_sym] = items1.delete(key) }
-  			#puts "items"
-	 		#puts items1
-		#end
-
-	 
-		
-	
-
-
-		#puts "paypal_helper"
-		#if paypal_helper.process_payment.create #devuelve vedadero si toda la informcion del pago esta bien
-		#	puts "ingreso al if"
-		#	@my_payment = MyPayment.create!(paypal_id: paypal_helper.payment.id, ip:request.remote_ip, shopping_cart_id: cookies[:shopping_cart_id]) # id identifica al pago y despues nos permite ejecutar el pago
-		#	puts "inserto en mi taablaa"
-		#	render json: {data: paypal_helper.payment.links.find{|v| v.method == "REDIRECT"}.href},status: :ok
-		#	#render json: paypal_helper.payment.links.find{|v| v.method == "REDIRECT"}.href
-		#	#{status: 'SUCCESS', message:'Se inserto el pago satisfactoriamente', data:@my_payment},status: :ok
-		#else
-		#	puts "error"
-		#	render json: paypal_helper.payment.error.to_yaml
-		#end
+		if paypal_helper.process_payment.create #devuelve vedadero si toda la informcion del pago esta bien
+			#if ShoppingCart.find(shopping) != nil?
+				@my_payment = MyPayment.create!(paypal_id: paypal_helper.payment.id, 
+											ip:request.remote_ip, 
+											shopping_cart_id: params['shopping_id'], 
+											total: total) # id identifica al pago y despues nos permite ejecutar el pago
+				render json: {data: paypal_helper.payment.links.find{|v| v.method == "REDIRECT"}.href},status: :ok
+			#else
+			#	render json: {status: 'ERROR', message:'El carrito ingresado no existe', data:@my_payment.errors},status: :unprocessable_entity
+			#end
+		else
+			render json: {data: paypal_helper.payment.error.to_yaml}
+		end
 	end
 
+	def convetirHash(p)
+		array = []
+		items1 = p.as_json
+  		length = items1.size - 1
+			for i in(0..length)
+				items2 = items1[i].to_h
+ 				items2.keys.each do|key| 
+	    			items2[key.to_sym] = items2.delete(key) 
+	    		end
+	    		hash = items2
+	    		array.push(hash)
+  			end
+  		return array
+	end
 end
