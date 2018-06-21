@@ -15,8 +15,6 @@
 #
 
 class MyPayment < ActiveRecord::Base
-	belongs_to :shopping_cart
-	has_many :products, through: :shopping_cart
 	include AASM
 	aasm column: "status" do 
 		state :created, initial: true
@@ -24,16 +22,8 @@ class MyPayment < ActiveRecord::Base
 		state :failed	
 
 		#definir los eventos
-		event :pay do  #intentamos pagar el c arrito
-			after do
-				#TODO: Marcr carrito como pagado shopping_cart.pay!
-				shopping_cart.pay!
-			end
+		event :pay do  #intentamos pagar el carrito
 			transitions from: :created, to: :payed
 		end
-	end
-
-	def products_by_user(user)
-		self.products.where(products:{user_id:user.id})
 	end
 end
