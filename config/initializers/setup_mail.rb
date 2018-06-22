@@ -6,5 +6,4 @@ ActionMailer::Base.smtp_settings = {
 	password: "EMELEC1526",
 	authentication: :login, 
 	enable_starttls_auto: true #ttls
-
 }
