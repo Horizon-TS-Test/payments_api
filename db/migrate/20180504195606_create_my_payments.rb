@@ -7,7 +7,6 @@ class CreateMyPayments < ActiveRecord::Migration[5.1]
       t.decimal :fee, precision: 6, scale: 2
       t.string :paypal_id
       t.decimal :total, precision: 10, scale: 2
-
       t.timestamps
     end
   end

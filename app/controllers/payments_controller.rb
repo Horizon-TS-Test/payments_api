@@ -14,7 +14,7 @@ class PaymentsController < ApplicationController
 				render json: {status: 'SUCCESS', message:'Se procesó el pago con Paypal', data:@my_payment},status: :ok
 				return
 			end
-			render json: {status: 'ERROR', message:'Hubo un error al procesar el pago', data:@my_payment.errors},status: :unprocessable_entity
+			render json: {status: 'ERROR', message:'Hubo un error al procesar el pago'},status: :unprocessable_entity
 			return
 		end
 	end
@@ -23,21 +23,22 @@ class PaymentsController < ApplicationController
 		products = params['productos']
 		h = convetirHash(products['items'])
 		total = products['total'] 
+		totalf = (total*100).round/100.0
+		puts totalf
 		items = h
 		return_url = products['return_url']
 		cancel_url = products['cancel_url']
 		tarjeta_datos = params['tarjeta']
-		paypal_helper = Stores::Paypal.new(total, items, return_url, cancel_url)
+		paypal_helper = Stores::Paypal.new(totalf, items, return_url, cancel_url)
 		if paypal_helper.process_card(tarjeta_datos).create
 			@my_payment = MyPayment.create!(paypal_id: paypal_helper.payment.id, 
 									  ip:request.remote_ip,
 									  email: tarjeta_datos['email'],
-									  shopping_cart_id: params['shopping_id'],
-									  total: total ) # id identifica al pago y despues nos permite ejecutar el pago
+									  total: totalf ) 
 			@my_payment.pay!
 			render json: {status: 'SUCCESS', message:'El pago se realizó correctamente', data:@my_payment},status: :ok
 		else
-			render json: {status: 'ERROR', message:'Hubo un error al procesar el pago', data:@my_payment.errors},status: :unprocessable_entity
+			render json: {status: 'ERROR', message:'Hubo un error al procesar el pago'},status: :unprocessable_entity
 		end
 	end
 
@@ -45,16 +46,16 @@ class PaymentsController < ApplicationController
 	def create
 		h = convetirHash(params['items'])
 		total = params['total'] 
+		totalf = (total*100).round/100.0
+		puts totalf
 		items = h
 		return_url = params['return_url']
 		cancel_url = params['cancel_url']
-		shopping = params['shopping_id']	
-		paypal_helper = Stores::Paypal.new(total, items, return_url, cancel_url)
+		paypal_helper = Stores::Paypal.new(totalf, items, return_url, cancel_url)
 		if paypal_helper.process_payment.create #devuelve vedadero si toda la informcion del pago esta bien
 			@my_payment = MyPayment.create!(paypal_id: paypal_helper.payment.id, 
 											ip:request.remote_ip, 
-											shopping_cart_id: params['shopping_id'], 
-											total: total) # id identifica al pago y despues nos permite ejecutar el pago
+											total: totalf) 
 			render json: {data: paypal_helper.payment.links.find{|v| v.method == "REDIRECT"}.href},status: :ok
 		else
 			render json: {data: paypal_helper.payment.error.to_yaml}
