@@ -17,9 +17,9 @@ gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
 #gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 4.2'
+#gem 'coffee-rails', '~> 4.2'
 # Use jquery as the JavaScript library
-gem 'jquery-rails'
+#gem 'jquery-rails'
 # gema de postgres
 gem 'pg','~> 0.21.0'
 # Turbolinks makes navigating your web application faster
@@ -31,13 +31,13 @@ gem 'jbuilder', '~> 2.5'
 #Devise para autenticacion
 gem "devise"
 #HAML para crear un mejor HTML
-gem "haml-rails"
+#gem "haml-rails"
 # Boostrap 
 gem "bootstrap-sass"
 # Tema Material Design para bootstrap
 gem "bootstrap-material-design"
 #Paperclip para subir imagenes
-gem 'paperclip' 
+#gem 'paperclip' 
 #PayPal SDK
 gem 'paypal-sdk-rest'
 # maquinas de estado Aasm 
