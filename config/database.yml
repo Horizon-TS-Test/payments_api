@@ -4,7 +4,7 @@ default: &default
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: lukask_user
-  password: 123
+  password: 123PreLukaskPay
   timeout: 5000
   port: 5432
 
