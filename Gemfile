@@ -62,7 +62,7 @@ group :development, :test do
 end
 
 group :production do
-  gem 'mysql2', '~> 0.3.9'
+  #gem 'mysql2', '~> 0.3.9'
 end
 
 group :development do
