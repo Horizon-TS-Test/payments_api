@@ -47,7 +47,7 @@ class PaymentsController < ApplicationController
 		h = convetirHash(params['items'])
 		total = params['total'] 
 		totalf = (total*100).round/100.0
-		puts totalf
+		#puts totalf
 		items = h
 		return_url = params['return_url']
 		cancel_url = params['cancel_url']
@@ -57,7 +57,9 @@ class PaymentsController < ApplicationController
 											ip:request.remote_ip, 
 											total: totalf) 
 			render json: {data: paypal_helper.payment.links.find{|v| v.method == "REDIRECT"}.href},status: :ok
+			puts "ingresoo al true"
 		else
+			puts "ingreso a false"
 			render json: {data: paypal_helper.payment.error.to_yaml}
 		end
 	end

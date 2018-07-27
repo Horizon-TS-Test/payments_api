@@ -5,4 +5,4 @@ require_relative 'application'
 Rails.application.initialize!
 
 # descomentar para ambiente de produccion
-#ENV['RAILS_ENV'] || = 'production'
+ENV['RAILS_ENV'] ||= 'production'
